@@ -1,0 +1,19 @@
+# Flutter
+quit_smoking_app/.dart_tool/
+quit_smoking_app/.packages
+quit_smoking_app/build/
+quit_smoking_app/*.iml
+quit_smoking_app/.flutter-plugins
+quit_smoking_app/.flutter-plugins-dependencies
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Misc
+*.log

@@ -1,0 +1,1052 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>禁煙記録アプリ</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0f1419;
+      --surface: #1a2332;
+      --surface-hover: #243044;
+      --accent: #00c896;
+      --accent-dim: #00a67d;
+      --danger: #e85d75;
+      --text: #e6edf3;
+      --text-muted: #8b9cb3;
+      --border: #2d3a4d;
+      --radius: 12px;
+      --shadow: 0 4px 24px rgba(0,0,0,0.3);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Noto Sans JP', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 20px;
+      padding-bottom: 40px;
+    }
+
+    .container {
+      max-width: 420px;
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+
+    h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: 0.02em;
+    }
+
+    .sub {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    /* タブ */
+    .tabs-nav {
+      display: flex;
+      gap: 0;
+      margin-bottom: 16px;
+      background: var(--surface);
+      border-radius: var(--radius);
+      padding: 4px;
+      border: 1px solid var(--border);
+      overflow-x: auto;
+    }
+
+    .tab-btn {
+      flex: 1;
+      min-width: 0;
+      padding: 10px 8px;
+      font-size: 0.75rem;
+      font-weight: 500;
+      font-family: inherit;
+      color: var(--text-muted);
+      background: transparent;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+      white-space: nowrap;
+    }
+
+    .tab-btn:hover {
+      color: var(--text);
+      background: var(--surface-hover);
+    }
+
+    .tab-btn.active {
+      color: var(--text);
+      background: var(--accent);
+      color: var(--bg);
+    }
+
+    .tab-panel {
+      display: none;
+    }
+
+    .tab-panel.active {
+      display: block;
+    }
+
+    /* 喫煙ボタン */
+    .smoke-section {
+      background: var(--surface);
+      border-radius: var(--radius);
+      padding: 24px;
+      margin-bottom: 24px;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .smoke-btn {
+      width: 140px;
+      height: 140px;
+      padding: 0;
+      font-size: 1.4rem;
+      font-weight: 700;
+      font-family: inherit;
+      color: #fff;
+      background: linear-gradient(135deg, var(--danger) 0%, #c94a5f 100%);
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.15s;
+      box-shadow: 0 4px 16px rgba(232, 93, 117, 0.35);
+    }
+
+    .smoke-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(232, 93, 117, 0.45);
+    }
+
+    .smoke-btn:active {
+      transform: translateY(0);
+    }
+
+    /* 手入力 */
+    .manual-section {
+      background: var(--surface);
+      border-radius: var(--radius);
+      padding: 20px;
+      margin-bottom: 24px;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+    }
+
+    .manual-section h2 {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 16px;
+      color: var(--text-muted);
+    }
+
+    .manual-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .manual-label {
+      font-size: 0.9rem;
+      color: var(--text);
+      min-width: 48px;
+    }
+
+    .manual-input {
+      flex: 1;
+      padding: 10px 12px;
+      font-size: 1rem;
+      font-family: inherit;
+      color: var(--text);
+      background: var(--surface-hover);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+    }
+
+    .manual-input:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
+    .manual-btn {
+      width: 100%;
+      margin-top: 8px;
+      padding: 12px;
+      font-size: 1rem;
+      font-weight: 600;
+      font-family: inherit;
+      color: var(--text);
+      background: var(--surface-hover);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .manual-btn:hover {
+      background: var(--border);
+    }
+
+    /* カレンダー */
+    .calendar-section {
+      background: var(--surface);
+      border-radius: var(--radius);
+      padding: 20px;
+      margin-bottom: 24px;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      min-width: 0;
+      overflow: hidden;
+    }
+
+    .calendar-section h2 {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 16px;
+      color: var(--text-muted);
+    }
+
+    .calendar-nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+
+    .calendar-nav button {
+      background: var(--surface-hover);
+      color: var(--text);
+      border: 1px solid var(--border);
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1.2rem;
+      line-height: 1;
+      transition: background 0.2s;
+    }
+
+    .calendar-nav button:hover {
+      background: var(--border);
+    }
+
+    .calendar-month-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+    }
+
+    .calendar-month {
+      font-weight: 600;
+      font-size: 1rem;
+    }
+
+    .calendar-month-total {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .calendar-body {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(0, 1fr));
+      gap: 4px;
+      min-width: 0;
+    }
+
+    .calendar-weekday {
+      text-align: center;
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      padding: 4px 0;
+      min-width: 0;
+    }
+
+    .calendar-days {
+      display: contents;
+    }
+
+    .calendar-day {
+      aspect-ratio: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.2s;
+      gap: 0;
+      min-width: 0;
+      overflow: hidden;
+    }
+
+    .calendar-day.empty {
+      cursor: default;
+      visibility: hidden;
+    }
+
+    .calendar-day.selectable {
+      color: var(--text);
+    }
+
+    .calendar-day.selectable:hover {
+      background: var(--surface-hover);
+    }
+
+    .calendar-day.selected {
+      background: var(--accent);
+      color: var(--bg);
+      font-weight: 600;
+    }
+
+    .calendar-day .day-num {
+      font-size: 0.85rem;
+    }
+
+    .calendar-day .day-spacer {
+      display: block;
+      height: 4px;
+    }
+
+    .calendar-day .day-count {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--danger);
+    }
+
+    .calendar-day .day-cost {
+      display: block;
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .calendar-day.selected .day-count {
+      color: rgba(0,0,0,0.85);
+    }
+
+    .calendar-day.selected .day-cost {
+      color: rgba(0,0,0,0.7);
+    }
+
+    /* 設定 */
+    .settings-section {
+      background: var(--surface);
+      border-radius: var(--radius);
+      padding: 20px;
+      margin-bottom: 24px;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+    }
+
+    .settings-section h2 {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 16px;
+      color: var(--text-muted);
+    }
+
+    .settings-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+
+    .settings-label {
+      font-size: 0.9rem;
+      color: var(--text);
+      min-width: 140px;
+    }
+
+    .settings-input {
+      width: 100px;
+      padding: 10px 12px;
+      font-size: 1rem;
+      font-family: inherit;
+      color: var(--text);
+      background: var(--surface-hover);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+    }
+
+    .settings-input:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
+    .settings-note {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 8px;
+    }
+
+    /* 履歴 */
+    .history-section {
+      background: var(--surface);
+      border-radius: var(--radius);
+      padding: 20px;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+    }
+
+    .history-section h2 {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 16px;
+      color: var(--text-muted);
+    }
+
+    .history-list {
+      list-style: none;
+    }
+
+    .history-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 14px;
+      background: var(--surface-hover);
+      border-radius: 8px;
+      margin-bottom: 8px;
+      border: 1px solid transparent;
+      transition: border-color 0.2s;
+    }
+
+    .history-item:last-child {
+      margin-bottom: 0;
+    }
+
+    .history-item.match {
+      border-color: var(--accent);
+      background: rgba(0, 200, 150, 0.08);
+    }
+
+    .history-item .history-main {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .history-date {
+      font-weight: 500;
+      font-size: 0.95rem;
+    }
+
+    .history-honme {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--danger);
+      margin-left: 4px;
+    }
+
+    .history-time {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .history-elapsed {
+      font-size: 0.75rem;
+      color: #e8994a;
+    }
+
+    .history-item .history-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .history-delete {
+      padding: 6px 10px;
+      font-size: 0.8rem;
+      color: var(--danger);
+      background: transparent;
+      border: 1px solid var(--danger);
+      border-radius: 6px;
+      cursor: pointer;
+      font-family: inherit;
+      transition: background 0.2s, color 0.2s;
+    }
+
+    .history-delete:hover {
+      background: var(--danger);
+      color: #fff;
+    }
+
+    .empty-history {
+      text-align: center;
+      padding: 32px 16px;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: var(--surface);
+      color: var(--text);
+      padding: 14px 24px;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      font-size: 0.9rem;
+      opacity: 0;
+      transition: transform 0.3s, opacity 0.3s;
+      z-index: 100;
+    }
+
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+
+    /* 目標到達ダイアログ */
+    .goal-reached-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 200;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.25s, visibility 0.25s;
+      padding: 20px;
+    }
+
+    .goal-reached-overlay.show {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .goal-reached-dialog {
+      background: var(--surface);
+      border: 3px solid var(--accent);
+      border-radius: 16px;
+      padding: 28px 24px;
+      max-width: 320px;
+      width: 100%;
+      box-shadow: 0 8px 40px rgba(0, 0, 0, 0.5), 0 0 0 1px var(--border);
+      text-align: center;
+    }
+
+    .goal-reached-dialog .goal-reached-message {
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: var(--text);
+      line-height: 1.5;
+      margin: 0 0 20px 0;
+    }
+
+    .goal-reached-dialog .goal-reached-close {
+      display: block;
+      width: 100%;
+      padding: 14px 24px;
+      font-size: 1rem;
+      font-weight: 600;
+      font-family: inherit;
+      color: #fff;
+      background: var(--accent);
+      border: none;
+      border-radius: var(--radius);
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+    }
+
+    .goal-reached-dialog .goal-reached-close:hover {
+      background: var(--accent-dim);
+    }
+
+    .goal-reached-dialog .goal-reached-close:active {
+      transform: scale(0.98);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>禁煙記録</h1>
+      <p class="sub">喫煙した日時を記録して振り返りましょう</p>
+    </header>
+
+    <section class="smoke-section">
+      <button type="button" class="smoke-btn" id="smokeBtn">喫煙</button>
+    </section>
+
+    <nav class="tabs-nav" role="tablist">
+      <button type="button" class="tab-btn active" role="tab" aria-selected="true" data-tab="calendar">喫煙記録</button>
+      <button type="button" class="tab-btn" role="tab" aria-selected="false" data-tab="manual">手入力</button>
+      <button type="button" class="tab-btn" role="tab" aria-selected="false" data-tab="settings">設定</button>
+    </nav>
+
+    <div id="tabPanelCalendar" class="tab-panel active" role="tabpanel">
+      <section class="calendar-section">
+        <h2>喫煙記録</h2>
+        <div class="calendar-nav">
+          <button type="button" id="prevMonth" aria-label="前月">‹</button>
+          <div class="calendar-month-wrap">
+            <span class="calendar-month" id="calendarMonth">2025年3月</span>
+            <span class="calendar-month-total" id="calendarMonthTotal"></span>
+          </div>
+          <button type="button" id="nextMonth" aria-label="次月">›</button>
+        </div>
+        <div class="calendar-body">
+          <span class="calendar-weekday">日</span>
+          <span class="calendar-weekday">月</span>
+          <span class="calendar-weekday">火</span>
+          <span class="calendar-weekday">水</span>
+          <span class="calendar-weekday">木</span>
+          <span class="calendar-weekday">金</span>
+          <span class="calendar-weekday">土</span>
+          <div class="calendar-days" id="calendarDays"></div>
+        </div>
+      </section>
+      <section class="history-section">
+        <h2>履歴 <span id="historySubtitle"></span></h2>
+        <ul class="history-list" id="historyList"></ul>
+        <p class="empty-history" id="emptyHistory">記録がありません</p>
+      </section>
+    </div>
+
+    <div id="tabPanelManual" class="tab-panel" role="tabpanel">
+      <section class="manual-section">
+        <h2>手動で記録</h2>
+        <div class="manual-row">
+          <label class="manual-label">日付</label>
+          <input type="date" id="manualDate" class="manual-input">
+        </div>
+        <div class="manual-row">
+          <label class="manual-label">時刻</label>
+          <input type="time" id="manualTime" class="manual-input" value="12:00">
+        </div>
+        <button type="button" class="manual-btn" id="manualAddBtn">記録を追加</button>
+      </section>
+    </div>
+
+    <div id="tabPanelSettings" class="tab-panel" role="tabpanel">
+      <section class="settings-section">
+        <h2>設定</h2>
+        <div class="settings-row">
+          <label class="settings-label" for="dailyTarget">一日の目標本数</label>
+          <input type="number" id="dailyTarget" class="settings-input" min="1" step="1" placeholder="10">
+        </div>
+        <div class="settings-row">
+          <label class="settings-label" for="pricePerPack">ひと箱の値段（円）</label>
+          <input type="number" id="pricePerPack" class="settings-input" min="0" step="1" placeholder="500">
+        </div>
+        <p class="settings-note">1箱＝20本として、カレンダーにその日の金額を表示します。目標本数に到達するとメッセージを表示します。</p>
+      </section>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <div class="goal-reached-overlay" id="goalReachedOverlay">
+    <div class="goal-reached-dialog">
+      <p class="goal-reached-message" id="goalReachedMessage"></p>
+      <button type="button" class="goal-reached-close" id="goalReachedClose">OK</button>
+    </div>
+  </div>
+
+  <script>
+    const STORAGE_KEY = 'smoking-records';
+    const PRICE_STORAGE_KEY = 'smoking-price-per-pack';
+    const TARGET_PER_DAY_KEY = 'smoking-target-per-day';
+    const CIGS_PER_PACK = 20;
+
+    function getDailyTarget() {
+      const v = localStorage.getItem(TARGET_PER_DAY_KEY);
+      if (v === null || v === '') return null;
+      const n = parseInt(v, 10);
+      return isNaN(n) || n < 1 ? null : n;
+    }
+
+    function saveDailyTarget(n) {
+      if (n === null || n === '' || n < 1) {
+        localStorage.removeItem(TARGET_PER_DAY_KEY);
+        return;
+      }
+      localStorage.setItem(TARGET_PER_DAY_KEY, String(n));
+    }
+
+    function getPricePerPack() {
+      const v = localStorage.getItem(PRICE_STORAGE_KEY);
+      if (v === null || v === '') return null;
+      const n = parseInt(v, 10);
+      return isNaN(n) || n < 0 ? null : n;
+    }
+
+    function savePricePerPack(price) {
+      if (price === null || price === '') {
+        localStorage.removeItem(PRICE_STORAGE_KEY);
+        return;
+      }
+      localStorage.setItem(PRICE_STORAGE_KEY, String(price));
+    }
+
+    function getRecords() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        return raw ? JSON.parse(raw) : [];
+      } catch {
+        return [];
+      }
+    }
+
+    function saveRecords(records) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
+    }
+
+    function addRecord() {
+      addRecordAt(new Date());
+    }
+
+    function addRecordAt(dt) {
+      const records = getRecords();
+      const dateStr = dt.getFullYear() + '-' + String(dt.getMonth() + 1).padStart(2, '0') + '-' + String(dt.getDate()).padStart(2, '0');
+      const timeStr = String(dt.getHours()).padStart(2, '0') + ':' + String(dt.getMinutes()).padStart(2, '0');
+      records.unshift({
+        id: Date.now().toString(36) + Math.random().toString(36).slice(2),
+        date: dateStr,
+        datetime: dt.toISOString(),
+        time: timeStr,
+        label: dt.toLocaleString('ja-JP', { dateStyle: 'medium', timeStyle: 'short' })
+      });
+      records.sort((a, b) => new Date(b.datetime) - new Date(a.datetime));
+      saveRecords(records);
+      const countThatDay = records.filter(r => r.date === dateStr).length;
+      const target = getDailyTarget();
+      if (target !== null && countThatDay >= target) {
+        showGoalReachedDialog(target);
+      } else {
+        showToast('記録しました');
+      }
+      renderCalendar();
+      renderHistory();
+    }
+
+    function showToast(message) {
+      const el = document.getElementById('toast');
+      el.textContent = message;
+      el.classList.add('show');
+      clearTimeout(el._tid);
+      el._tid = setTimeout(() => el.classList.remove('show'), 2000);
+    }
+
+    function showGoalReachedDialog(targetCount) {
+      const overlay = document.getElementById('goalReachedOverlay');
+      const messageEl = document.getElementById('goalReachedMessage');
+      messageEl.textContent = '記録しました。本日の目標本数（' + targetCount + '本）に到達しました！';
+      overlay.classList.add('show');
+    }
+
+    function hideGoalReachedDialog() {
+      document.getElementById('goalReachedOverlay').classList.remove('show');
+    }
+
+    document.getElementById('goalReachedClose').addEventListener('click', hideGoalReachedDialog);
+    document.getElementById('goalReachedOverlay').addEventListener('click', function(e) {
+      if (e.target === this) hideGoalReachedDialog();
+    });
+
+    let currentCalendarDate = new Date();
+    let selectedDate = null;
+
+    function getCalendarYearMonth() {
+      return currentCalendarDate.getFullYear() + '年' + (currentCalendarDate.getMonth() + 1) + '月';
+    }
+
+    function getCountPerDay() {
+      const records = getRecords();
+      const count = {};
+      records.forEach(r => {
+        count[r.date] = (count[r.date] || 0) + 1;
+      });
+      return count;
+    }
+
+    function getMonthTotal(year, month) {
+      const price = getPricePerPack();
+      if (price === null || price <= 0) return null;
+      const countPerDay = getCountPerDay();
+      const last = new Date(year, month + 1, 0);
+      const daysInMonth = last.getDate();
+      let total = 0;
+      for (let d = 1; d <= daysInMonth; d++) {
+        const dateKey = year + '-' + String(month + 1).padStart(2, '0') + '-' + String(d).padStart(2, '0');
+        const n = countPerDay[dateKey] || 0;
+        total += Math.round((n / CIGS_PER_PACK) * price);
+      }
+      return total;
+    }
+
+    function renderCalendar() {
+      document.getElementById('calendarMonth').textContent = getCalendarYearMonth();
+      const year = currentCalendarDate.getFullYear();
+      const month = currentCalendarDate.getMonth();
+      const monthTotal = getMonthTotal(year, month);
+      const totalEl = document.getElementById('calendarMonthTotal');
+      totalEl.textContent = monthTotal !== null ? '合計 ¥' + monthTotal.toLocaleString() : '';
+
+      const first = new Date(year, month, 1);
+      const last = new Date(year, month + 1, 0);
+      const startPad = first.getDay();
+      const daysInMonth = last.getDate();
+
+      const countPerDay = getCountPerDay();
+      const selectedStr = selectedDate ? formatDateKey(selectedDate) : null;
+
+      const container = document.getElementById('calendarDays');
+      container.innerHTML = '';
+
+      for (let i = 0; i < startPad; i++) {
+        const cell = document.createElement('div');
+        cell.className = 'calendar-day empty';
+        container.appendChild(cell);
+      }
+
+      for (let d = 1; d <= daysInMonth; d++) {
+        const date = new Date(year, month, d);
+        const dateKey = formatDateKey(date);
+        const n = countPerDay[dateKey] || 0;
+        const cell = document.createElement('div');
+        cell.className = 'calendar-day selectable';
+        if (dateKey === selectedStr) cell.classList.add('selected');
+        const dayNum = document.createElement('span');
+        dayNum.className = 'day-num';
+        dayNum.textContent = d;
+        cell.appendChild(dayNum);
+        if (n > 0) {
+          const spacer = document.createElement('span');
+          spacer.className = 'day-spacer';
+          cell.appendChild(spacer);
+          const dayCount = document.createElement('span');
+          dayCount.className = 'day-count';
+          dayCount.textContent = n + '本';
+          cell.appendChild(dayCount);
+          const price = getPricePerPack();
+          if (price !== null && price > 0) {
+            const dayCost = Math.round((n / CIGS_PER_PACK) * price);
+            const costSpan = document.createElement('span');
+            costSpan.className = 'day-cost';
+            costSpan.textContent = '¥' + dayCost.toLocaleString();
+            cell.appendChild(costSpan);
+          }
+        }
+        cell.addEventListener('click', () => {
+          selectedDate = date;
+          renderCalendar();
+          renderHistory();
+        });
+        container.appendChild(cell);
+      }
+
+      const total = startPad + daysInMonth;
+      const trailing = (7 - (total % 7)) % 7;
+      for (let i = 0; i < trailing; i++) {
+        const cell = document.createElement('div');
+        cell.className = 'calendar-day empty';
+        container.appendChild(cell);
+      }
+    }
+
+    function formatDateKey(d) {
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      return `${y}-${m}-${day}`;
+    }
+
+    function getHonme(records, record) {
+      if (!record || !record.date) return 1;
+      const sameDay = records.filter(r => r && r.date === record.date).sort(
+        (a, b) => new Date(a.datetime || 0) - new Date(b.datetime || 0)
+      );
+      const idx = sameDay.findIndex(r => (r.id && record.id ? r.id === record.id : r.datetime === record.datetime));
+      return idx === -1 ? 1 : idx + 1;
+    }
+
+    function getElapsedStr(prevDatetime, currentDatetime) {
+      const prev = new Date(prevDatetime).getTime();
+      const cur = new Date(currentDatetime).getTime();
+      const diffMs = cur - prev;
+      const totalMinutes = Math.floor(diffMs / 60000);
+      if (totalMinutes < 60) return totalMinutes + '分前';
+      const h = Math.floor(totalMinutes / 60);
+      const m = totalMinutes % 60;
+      if (m === 0) return h + '時間前';
+      return h + '時間' + m + '分前';
+    }
+
+    function deleteRecord(id) {
+      const records = getRecords().filter(r => r.id !== id);
+      saveRecords(records);
+      showToast('削除しました');
+      renderCalendar();
+      renderHistory();
+    }
+
+    function renderHistory() {
+      const records = getRecords();
+      const listEl = document.getElementById('historyList');
+      const emptyEl = document.getElementById('emptyHistory');
+      const subEl = document.getElementById('historySubtitle');
+
+      let filtered = records;
+      if (selectedDate) {
+        const key = formatDateKey(selectedDate);
+        filtered = records.filter(r => r.date === key);
+        subEl.textContent = `（${selectedDate.getMonth() + 1}/${selectedDate.getDate()}）`;
+      } else {
+        subEl.textContent = '';
+      }
+
+      emptyEl.style.display = filtered.length ? 'none' : 'block';
+      listEl.innerHTML = '';
+
+      filtered.forEach((record, index) => {
+        const fullList = selectedDate ? filtered : records;
+        const nextInOrder = fullList[index + 1];
+        const elapsedText = nextInOrder
+          ? getElapsedStr(nextInOrder.datetime, record.datetime)
+          : null;
+        const honme = getHonme(records, record);
+
+        const li = document.createElement('li');
+        li.className = 'history-item' + (selectedDate ? ' match' : '');
+        const main = document.createElement('div');
+        main.className = 'history-main';
+        main.innerHTML = `
+          <span class="history-date">${record.date} <span class="history-honme">${honme}本目</span></span>
+          <span class="history-time">${record.time}</span>
+          ${elapsedText ? '<span class="history-elapsed">前回から ' + elapsedText + '</span>' : ''}
+        `;
+        const actions = document.createElement('div');
+        actions.className = 'history-actions';
+        const delBtn = document.createElement('button');
+        delBtn.type = 'button';
+        delBtn.className = 'history-delete';
+        delBtn.textContent = '削除';
+        delBtn.addEventListener('click', () => deleteRecord(record.id));
+        actions.appendChild(delBtn);
+        li.appendChild(main);
+        li.appendChild(actions);
+        listEl.appendChild(li);
+      });
+    }
+
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        const tab = this.getAttribute('data-tab');
+        document.querySelectorAll('.tab-btn').forEach(b => { b.classList.remove('active'); b.setAttribute('aria-selected', 'false'); });
+        document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+        this.classList.add('active');
+        this.setAttribute('aria-selected', 'true');
+        const panel = document.getElementById('tabPanel' + tab.charAt(0).toUpperCase() + tab.slice(1));
+        if (panel) panel.classList.add('active');
+      });
+    });
+
+    document.getElementById('smokeBtn').addEventListener('click', addRecord);
+
+    document.getElementById('manualAddBtn').addEventListener('click', () => {
+      const dateInput = document.getElementById('manualDate');
+      const timeInput = document.getElementById('manualTime');
+      const dateVal = dateInput.value;
+      const timeVal = timeInput.value;
+      if (!dateVal || !timeVal) {
+        showToast('日付と時刻を入力してください');
+        return;
+      }
+      const [y, m, d] = dateVal.split('-').map(Number);
+      const [h, min] = timeVal.split(':').map(Number);
+      const dt = new Date(y, m - 1, d, h, min, 0, 0);
+      if (isNaN(dt.getTime())) {
+        showToast('正しい日時を入力してください');
+        return;
+      }
+      addRecordAt(dt);
+      setManualDateToToday();
+      timeInput.value = '12:00';
+    });
+
+    document.getElementById('prevMonth').addEventListener('click', () => {
+      currentCalendarDate.setMonth(currentCalendarDate.getMonth() - 1);
+      renderCalendar();
+    });
+
+    document.getElementById('nextMonth').addEventListener('click', () => {
+      currentCalendarDate.setMonth(currentCalendarDate.getMonth() + 1);
+      renderCalendar();
+    });
+
+    function setManualDateToToday() {
+      const d = new Date();
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      const el = document.getElementById('manualDate');
+      if (el) el.value = y + '-' + m + '-' + day;
+    }
+
+    document.getElementById('dailyTarget').addEventListener('input', function() {
+      const v = this.value.trim();
+      if (v === '') {
+        saveDailyTarget(null);
+      } else {
+        const n = parseInt(v, 10);
+        if (!isNaN(n) && n >= 1) saveDailyTarget(n);
+      }
+    });
+
+    document.getElementById('pricePerPack').addEventListener('input', function() {
+      const v = this.value.trim();
+      if (v === '') {
+        savePricePerPack(null);
+      } else {
+        const n = parseInt(v, 10);
+        if (!isNaN(n) && n >= 0) savePricePerPack(n);
+      }
+      renderCalendar();
+    });
+
+    currentCalendarDate = new Date();
+    const savedTarget = getDailyTarget();
+    if (savedTarget !== null) document.getElementById('dailyTarget').value = savedTarget;
+    const savedPrice = getPricePerPack();
+    if (savedPrice !== null) document.getElementById('pricePerPack').value = savedPrice;
+    setManualDateToToday();
+    renderCalendar();
+    renderHistory();
+  </script>
+</body>
+</html>
