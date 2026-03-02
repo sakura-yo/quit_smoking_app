@@ -96,16 +96,21 @@ class _HomeScreenState extends State<HomeScreen>
     );
   }
 
+  static const double _maxContentWidth = 420;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: Column(
-          children: [
-            const Padding(
-              padding: EdgeInsets.fromLTRB(16, 12, 16, 8),
-              child: Text(
-                '禁煙記録',
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: _maxContentWidth),
+            child: Column(
+              children: [
+                const Padding(
+                  padding: EdgeInsets.fromLTRB(16, 12, 16, 8),
+                  child: Text(
+                    '禁煙記録',
                 style: TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.bold,
@@ -171,7 +176,9 @@ class _HomeScreenState extends State<HomeScreen>
                 ],
               ),
             ),
-          ],
+              ],
+            ),
+          ),
         ),
       ),
     );
