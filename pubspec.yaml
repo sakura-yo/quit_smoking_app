@@ -31,6 +31,7 @@ flutter_launcher_icons:
   android: true
   adaptive_icon_foreground: "assets/icons/adaptive_icon_foreground.png"
   adaptive_icon_background: "#2E7D32"
+  adaptive_icon_foreground_inset: 0  # 透過前景を全面に表示
   ios: true
   web:
     generate: true
