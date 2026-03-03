@@ -1,11 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import '../l10n/app_strings.dart';
 import '../services/storage_service.dart';
 
 class SettingsSection extends StatefulWidget {
   final StorageService storage;
+  final void Function(Locale locale) onLocaleChanged;
 
-  const SettingsSection({super.key, required this.storage});
+  const SettingsSection({
+    super.key,
+    required this.storage,
+    required this.onLocaleChanged,
+  });
 
   @override
   State<SettingsSection> createState() => _SettingsSectionState();
@@ -35,6 +41,7 @@ class _SettingsSectionState extends State<SettingsSection> {
 
   @override
   Widget build(BuildContext context) {
+    final currentLocale = widget.storage.getLocale();
     return SingleChildScrollView(
       padding: const EdgeInsets.all(20),
       child: Card(
@@ -43,9 +50,9 @@ class _SettingsSectionState extends State<SettingsSection> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                '設定',
-                style: TextStyle(
+              Text(
+                AppStrings.get(context, 'settings'),
+                style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
                   color: Color(0xFF8B9CB3),
@@ -54,11 +61,51 @@ class _SettingsSectionState extends State<SettingsSection> {
               const SizedBox(height: 16),
               Row(
                 children: [
-                  const SizedBox(
+                  SizedBox(
                     width: 140,
                     child: Text(
-                      '一日の目標本数',
-                      style: TextStyle(color: Color(0xFFE6EDF3)),
+                      AppStrings.get(context, 'language'),
+                      style: const TextStyle(color: Color(0xFFE6EDF3)),
+                    ),
+                  ),
+                  Expanded(
+                    child: DropdownButtonFormField<String>(
+                      initialValue: currentLocale == 'en' ? 'en' : 'ja',
+                      dropdownColor: const Color(0xFF1A2332),
+                      style: const TextStyle(color: Color(0xFFE6EDF3)),
+                      decoration: InputDecoration(
+                        filled: true,
+                        fillColor: const Color(0xFF243044),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: const BorderSide(color: Color(0xFF2D3A4D)),
+                        ),
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 10,
+                        ),
+                      ),
+                      items: const [
+                        DropdownMenuItem(value: 'ja', child: Text('日本語')),
+                        DropdownMenuItem(value: 'en', child: Text('English')),
+                      ],
+                      onChanged: (v) async {
+                        if (v == null) return;
+                        await widget.storage.saveLocale(v);
+                        widget.onLocaleChanged(Locale(v));
+                      },
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              Row(
+                children: [
+                  SizedBox(
+                    width: 140,
+                    child: Text(
+                      AppStrings.get(context, 'dailyTarget'),
+                      style: const TextStyle(color: Color(0xFFE6EDF3)),
                     ),
                   ),
                   SizedBox(
@@ -96,11 +143,11 @@ class _SettingsSectionState extends State<SettingsSection> {
               const SizedBox(height: 12),
               Row(
                 children: [
-                  const SizedBox(
+                  SizedBox(
                     width: 140,
                     child: Text(
-                      'ひと箱の値段（円）',
-                      style: TextStyle(color: Color(0xFFE6EDF3)),
+                      AppStrings.get(context, 'pricePerPack'),
+                      style: const TextStyle(color: Color(0xFFE6EDF3)),
                     ),
                   ),
                   SizedBox(
@@ -136,9 +183,9 @@ class _SettingsSectionState extends State<SettingsSection> {
                 ],
               ),
               const SizedBox(height: 12),
-              const Text(
-                '1箱＝20本として、カレンダーにその日の金額を表示します。目標本数に到達するとメッセージを表示します。',
-                style: TextStyle(
+              Text(
+                AppStrings.get(context, 'settingsNote'),
+                style: const TextStyle(
                   fontSize: 12,
                   color: Color(0xFF8B9CB3),
                 ),

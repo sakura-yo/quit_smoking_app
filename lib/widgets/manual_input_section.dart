@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import '../l10n/app_strings.dart';
 import '../services/storage_service.dart';
 
 class ManualInputSection extends StatefulWidget {
@@ -71,9 +72,9 @@ class _ManualInputSectionState extends State<ManualInputSection> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                '手動で記録',
-                style: TextStyle(
+              Text(
+                AppStrings.get(context, 'manualRecord'),
+                style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
                   color: Color(0xFF8B9CB3),
@@ -82,9 +83,12 @@ class _ManualInputSectionState extends State<ManualInputSection> {
               const SizedBox(height: 16),
               Row(
                 children: [
-                  const SizedBox(
+                  SizedBox(
                     width: 100,
-                    child: Text('日付', style: TextStyle(color: Color(0xFFE6EDF3))),
+                    child: Text(
+                      AppStrings.get(context, 'date'),
+                      style: const TextStyle(color: Color(0xFFE6EDF3)),
+                    ),
                   ),
                   Expanded(
                     child: OutlinedButton(
@@ -101,9 +105,12 @@ class _ManualInputSectionState extends State<ManualInputSection> {
               const SizedBox(height: 12),
               Row(
                 children: [
-                  const SizedBox(
+                  SizedBox(
                     width: 100,
-                    child: Text('時刻', style: TextStyle(color: Color(0xFFE6EDF3))),
+                    child: Text(
+                      AppStrings.get(context, 'time'),
+                      style: const TextStyle(color: Color(0xFFE6EDF3)),
+                    ),
                   ),
                   Expanded(
                     child: OutlinedButton(
@@ -127,7 +134,7 @@ class _ManualInputSectionState extends State<ManualInputSection> {
                     foregroundColor: const Color(0xFFE6EDF3),
                     side: const BorderSide(color: Color(0xFF2D3A4D)),
                   ),
-                  child: const Text('記録を追加'),
+                  child: Text(AppStrings.get(context, 'addRecord')),
                 ),
               ),
             ],

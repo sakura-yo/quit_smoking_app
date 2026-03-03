@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import '../l10n/app_strings.dart';
 import '../models/smoking_record.dart';
 import '../services/storage_service.dart';
 
@@ -62,18 +63,21 @@ class _CalendarHistoryTabState extends State<CalendarHistoryTab> {
     return idx == -1 ? 1 : idx + 1;
   }
 
-  String? _getElapsed(SmokingRecord record, List<SmokingRecord> sorted) {
+  String? _getElapsed(
+      BuildContext context, SmokingRecord record, List<SmokingRecord> sorted) {
     final idx = sorted.indexWhere((r) => r.id == record.id);
     if (idx < 0 || idx + 1 >= sorted.length) return null;
     final prev = sorted[idx + 1].dateTime;
     final cur = record.dateTime;
     final diff = cur.difference(prev);
     final totalMinutes = diff.inMinutes;
-    if (totalMinutes < 60) return '${totalMinutes}分前';
+    if (totalMinutes < 60) {
+      return AppStrings.get(context, 'minutesAgo', [totalMinutes]);
+    }
     final h = totalMinutes ~/ 60;
     final m = totalMinutes % 60;
-    if (m == 0) return '${h}時間前';
-    return '${h}時間${m}分前';
+    if (m == 0) return AppStrings.get(context, 'hoursAgo', [h]);
+    return AppStrings.get(context, 'hoursMinutesAgo', [h, m]);
   }
 
   @override
@@ -131,7 +135,7 @@ class _CalendarHistoryTabState extends State<CalendarHistoryTab> {
                           ),
                           if (monthTotal != null)
                             Text(
-                              '合計 ¥${NumberFormat('#,###').format(monthTotal)}',
+                              '${AppStrings.get(context, 'total')} ¥${NumberFormat('#,###').format(monthTotal)}',
                               style: const TextStyle(
                                 fontSize: 12,
                                 color: Color(0xFF8B9CB3),
@@ -156,7 +160,15 @@ class _CalendarHistoryTabState extends State<CalendarHistoryTab> {
                       (i) => Expanded(
                         child: Center(
                           child: Text(
-                            ['日', '月', '火', '水', '木', '金', '土'][i],
+                            [
+                              AppStrings.get(context, 'weekdaySun'),
+                              AppStrings.get(context, 'weekdayMon'),
+                              AppStrings.get(context, 'weekdayTue'),
+                              AppStrings.get(context, 'weekdayWed'),
+                              AppStrings.get(context, 'weekdayThu'),
+                              AppStrings.get(context, 'weekdayFri'),
+                              AppStrings.get(context, 'weekdaySat'),
+                            ][i],
                             style: const TextStyle(
                               fontSize: 11,
                               color: Color(0xFF8B9CB3),
@@ -231,7 +243,7 @@ class _CalendarHistoryTabState extends State<CalendarHistoryTab> {
                                     if (n > 0) ...[
                                       const SizedBox(height: 1),
                                       Text(
-                                        '${n}本',
+                                        AppStrings.get(context, 'nCigs', [n]),
                                         style: TextStyle(
                                           fontSize: 10,
                                           fontWeight: FontWeight.w600,
@@ -279,8 +291,8 @@ class _CalendarHistoryTabState extends State<CalendarHistoryTab> {
                 children: [
                   Row(
                     children: [
-                      const Text(
-                        '履歴',
+                      Text(
+                        AppStrings.get(context, 'history'),
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
@@ -299,12 +311,12 @@ class _CalendarHistoryTabState extends State<CalendarHistoryTab> {
                   ),
                   const SizedBox(height: 12),
                   if (displayedRecords.isEmpty)
-                    const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 24),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 24),
                       child: Center(
                         child: Text(
-                          '記録がありません',
-                          style: TextStyle(color: Color(0xFF8B9CB3)),
+                          AppStrings.get(context, 'noRecords'),
+                          style: const TextStyle(color: Color(0xFF8B9CB3)),
                         ),
                       ),
                     )
@@ -312,7 +324,7 @@ class _CalendarHistoryTabState extends State<CalendarHistoryTab> {
                     ...displayedRecords.map((record) {
                       final honme = _getHonme(record);
                       final elapsed =
-                          _getElapsed(record, sortedRecords);
+                          _getElapsed(context, record, sortedRecords);
                       return Container(
                         margin: const EdgeInsets.only(bottom: 8),
                         padding: const EdgeInsets.symmetric(
@@ -346,7 +358,7 @@ class _CalendarHistoryTabState extends State<CalendarHistoryTab> {
                                       ),
                                       const SizedBox(width: 6),
                                       Text(
-                                        '${honme}本目',
+                                        AppStrings.get(context, 'nthCig', [honme]),
                                         style: const TextStyle(
                                           fontSize: 13,
                                           fontWeight: FontWeight.w600,
@@ -368,7 +380,7 @@ class _CalendarHistoryTabState extends State<CalendarHistoryTab> {
                                       if (elapsed != null) ...[
                                         const SizedBox(width: 8),
                                         Text(
-                                          '前回から $elapsed',
+                                          AppStrings.get(context, 'sinceLast', [elapsed]),
                                           style: const TextStyle(
                                             fontSize: 12,
                                             color: Color(0xFFE8994A),

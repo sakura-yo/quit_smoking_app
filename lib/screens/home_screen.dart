@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../l10n/app_strings.dart';
 import '../models/smoking_record.dart';
 import '../services/storage_service.dart';
 import '../widgets/smoke_button.dart';
@@ -9,8 +10,13 @@ import '../widgets/goal_reached_dialog.dart';
 
 class HomeScreen extends StatefulWidget {
   final StorageService storage;
+  final void Function(Locale locale) onLocaleChanged;
 
-  const HomeScreen({super.key, required this.storage});
+  const HomeScreen({
+    super.key,
+    required this.storage,
+    required this.onLocaleChanged,
+  });
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -58,7 +64,7 @@ class _HomeScreenState extends State<HomeScreen>
     if (target != null && countThatDay >= target) {
       if (mounted) _showGoalReachedDialog(target);
     } else {
-      if (mounted) _showToast('記録しました');
+      if (mounted) _showToast(AppStrings.get(context, 'toastRecorded'));
     }
   }
 
@@ -73,7 +79,7 @@ class _HomeScreenState extends State<HomeScreen>
     _records.removeWhere((r) => r.id == record.id);
     await widget.storage.saveRecords(_records);
     setState(() {});
-    if (mounted) _showToast('削除しました');
+    if (mounted) _showToast(AppStrings.get(context, 'toastDeleted'));
   }
 
   void _showToast(String message) {
@@ -136,28 +142,31 @@ class _HomeScreenState extends State<HomeScreen>
       body: SafeArea(
         child: Column(
           children: [
-            const Padding(
-              padding: EdgeInsets.fromLTRB(16, 12, 16, 8),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
               child: Text(
-                '禁煙記録',
-                style: TextStyle(
+                AppStrings.get(context, 'appTitle'),
+                style: const TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.bold,
                   color: Color(0xFFE6EDF3),
                 ),
               ),
             ),
-            const Padding(
-              padding: EdgeInsets.only(bottom: 12),
+            Padding(
+              padding: const EdgeInsets.only(bottom: 12),
               child: Text(
-                '喫煙した日時を記録して振り返りましょう',
-                style: TextStyle(
+                AppStrings.get(context, 'subtitle'),
+                style: const TextStyle(
                   fontSize: 13,
                   color: Color(0xFF8B9CB3),
                 ),
               ),
             ),
-            SmokeButton(onPressed: () => _addRecord(DateTime.now())),
+            SmokeButton(
+              label: AppStrings.get(context, 'smoking'),
+              onPressed: () => _addRecord(DateTime.now()),
+            ),
             const SizedBox(height: 12),
             Material(
               color: const Color(0xFF1A2332),
@@ -181,10 +190,10 @@ class _HomeScreenState extends State<HomeScreen>
                   fontWeight: FontWeight.w600,
                   fontSize: 13,
                 ),
-                tabs: const [
-                  Tab(text: '喫煙記録'),
-                  Tab(text: '手入力'),
-                  Tab(text: '設定'),
+                tabs: [
+                  Tab(text: AppStrings.get(context, 'tabRecords')),
+                  Tab(text: AppStrings.get(context, 'tabManual')),
+                  Tab(text: AppStrings.get(context, 'tabSettings')),
                 ],
               ),
             ),
@@ -201,7 +210,10 @@ class _HomeScreenState extends State<HomeScreen>
                     onRecordAdded: _addRecord,
                     storage: widget.storage,
                   ),
-                  SettingsSection(storage: widget.storage),
+                  SettingsSection(
+                    storage: widget.storage,
+                    onLocaleChanged: widget.onLocaleChanged,
+                  ),
                 ],
               ),
             ),

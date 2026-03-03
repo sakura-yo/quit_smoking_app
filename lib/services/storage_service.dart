@@ -5,6 +5,7 @@ class StorageService {
   static const _keyRecords = 'smoking_records';
   static const _keyPricePerPack = 'smoking_price_per_pack';
   static const _keyTargetPerDay = 'smoking_target_per_day';
+  static const _keyLocale = 'app_locale';
 
   final SharedPreferences _prefs;
 
@@ -49,5 +50,13 @@ class StorageService {
     } else {
       await _prefs.setString(_keyTargetPerDay, value.toString());
     }
+  }
+
+  String getLocale() {
+    return _prefs.getString(_keyLocale) ?? 'ja';
+  }
+
+  Future<void> saveLocale(String languageCode) async {
+    await _prefs.setString(_keyLocale, languageCode);
   }
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'services/storage_service.dart';
 import 'screens/home_screen.dart';
@@ -14,15 +15,42 @@ void main() async {
   runApp(QuitSmokingApp(storage: storage));
 }
 
-class QuitSmokingApp extends StatelessWidget {
+class QuitSmokingApp extends StatefulWidget {
   final StorageService storage;
 
   const QuitSmokingApp({super.key, required this.storage});
 
   @override
+  State<QuitSmokingApp> createState() => _QuitSmokingAppState();
+}
+
+class _QuitSmokingAppState extends State<QuitSmokingApp> {
+  late Locale _locale;
+
+  @override
+  void initState() {
+    super.initState();
+    _locale = Locale(widget.storage.getLocale());
+  }
+
+  void _onLocaleChanged(Locale locale) {
+    setState(() => _locale = locale);
+  }
+
+  @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: '禁煙記録',
+      locale: _locale,
+      supportedLocales: const [
+        Locale('ja'),
+        Locale('en'),
+      ],
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
       theme: ThemeData(
         useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(
@@ -45,7 +73,10 @@ class QuitSmokingApp extends StatelessWidget {
           foregroundColor: Color(0xFFE6EDF3),
         ),
       ),
-      home: HomeScreen(storage: storage),
+      home: HomeScreen(
+        storage: widget.storage,
+        onLocaleChanged: _onLocaleChanged,
+      ),
     );
   }
 }

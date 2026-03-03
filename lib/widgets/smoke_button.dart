@@ -2,8 +2,13 @@ import 'package:flutter/material.dart';
 
 class SmokeButton extends StatelessWidget {
   final VoidCallback onPressed;
+  final String label;
 
-  const SmokeButton({super.key, required this.onPressed});
+  const SmokeButton({
+    super.key,
+    required this.onPressed,
+    required this.label,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -37,9 +42,9 @@ class SmokeButton extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Text(
-                  '喫煙',
-                  style: TextStyle(
+                Text(
+                  label,
+                  style: const TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.bold,
                     color: Colors.white,

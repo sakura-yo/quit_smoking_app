@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../l10n/app_strings.dart';
 
 class GoalReachedDialog extends StatelessWidget {
   final int targetCount;
@@ -24,7 +25,7 @@ class GoalReachedDialog extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              '記録しました。本日の目標本数（${targetCount}本）に到達しました！',
+              AppStrings.get(context, 'goalReached', [targetCount]),
               textAlign: TextAlign.center,
               style: const TextStyle(
                 fontSize: 18,
