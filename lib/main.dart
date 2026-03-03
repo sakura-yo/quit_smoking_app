@@ -73,9 +73,14 @@ class _QuitSmokingAppState extends State<QuitSmokingApp> {
           foregroundColor: Color(0xFFE6EDF3),
         ),
       ),
-      home: HomeScreen(
-        storage: widget.storage,
-        onLocaleChanged: _onLocaleChanged,
+      home: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 420),
+          child: HomeScreen(
+            storage: widget.storage,
+            onLocaleChanged: _onLocaleChanged,
+          ),
+        ),
       ),
     );
   }
