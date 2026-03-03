@@ -33,13 +33,29 @@ class SmokeButton extends StatelessWidget {
               ],
             ),
             alignment: Alignment.center,
-            child: const Text(
-              '喫煙',
-              style: TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Text(
+                  '喫煙',
+                  style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+                const SizedBox(height: 6),
+                SizedBox(
+                  width: 167,
+                  height: 73,
+                  child: Image.asset(
+                    'assets/icons/cigarette_button.png',
+                    fit: BoxFit.contain,
+                    errorBuilder: (_, __, ___) => const SizedBox.shrink(),
+                  ),
+                ),
+              ],
             ),
           ),
         ),
